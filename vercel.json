@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build:api",
+  "builds": [
+    {
+      "src": "dist/api/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/stream/(.*)",
+      "dest": "dist/api/server.js",
+      "methods": ["GET"],
+      "headers": {
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+      }
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/api/server.js"
+    },
+    {
+      "src": "/api-docs",
+      "dest": "dist/api/server.js"
+    },
+    {
+      "src": "/swagger.json",
+      "dest": "dist/api/server.js"
+    }
+  ]
+}

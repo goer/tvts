@@ -1,0 +1,628 @@
+{
+	"openapi": "3.0.0",
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"ErrorResponse": {
+				"properties": {
+					"error": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					},
+					"details": {}
+				},
+				"required": [
+					"error",
+					"message"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Interval": {
+				"type": "string",
+				"enum": [
+					"1",
+					"5",
+					"15",
+					"30",
+					"60",
+					"240",
+					"1D",
+					"1W",
+					"1M"
+				],
+				"description": "Supported timeframe intervals"
+			},
+			"OHLCV": {
+				"description": "OHLCV (Open, High, Low, Close, Volume) data structure",
+				"properties": {
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"open": {
+						"type": "number",
+						"format": "double"
+					},
+					"high": {
+						"type": "number",
+						"format": "double"
+					},
+					"low": {
+						"type": "number",
+						"format": "double"
+					},
+					"close": {
+						"type": "number",
+						"format": "double"
+					},
+					"volume": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"timestamp",
+					"open",
+					"high",
+					"low",
+					"close",
+					"volume"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Quote": {
+				"description": "Real-time quote data",
+				"properties": {
+					"symbol": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"bid": {
+						"type": "number",
+						"format": "double"
+					},
+					"ask": {
+						"type": "number",
+						"format": "double"
+					},
+					"volume": {
+						"type": "number",
+						"format": "double"
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"symbol",
+					"price",
+					"timestamp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HealthResponse": {
+				"properties": {
+					"status": {
+						"type": "string",
+						"enum": [
+							"ok",
+							"degraded",
+							"down"
+						]
+					},
+					"timestamp": {
+						"type": "string"
+					},
+					"version": {
+						"type": "string"
+					},
+					"uptime": {
+						"type": "number",
+						"format": "double"
+					},
+					"environment": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"status",
+					"timestamp",
+					"version",
+					"uptime",
+					"environment"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"DebugInfo": {
+				"properties": {
+					"nodeEnv": {
+						"type": "string"
+					},
+					"hasApiKey": {
+						"type": "boolean"
+					},
+					"apiKeyValue": {
+						"type": "string"
+					},
+					"hasTvwsToken": {
+						"type": "boolean"
+					},
+					"tvwsTokenPreview": {
+						"type": "string"
+					},
+					"envVars": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"timestamp": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"nodeEnv",
+					"hasApiKey",
+					"apiKeyValue",
+					"hasTvwsToken",
+					"tvwsTokenPreview",
+					"envVars",
+					"timestamp"
+				],
+				"type": "object",
+				"additionalProperties": false
+			}
+		},
+		"securitySchemes": {
+			"api_key": {
+				"type": "apiKey",
+				"name": "X-API-Key",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "TVTS API",
+		"version": "1.0.0",
+		"description": "TradingView TypeScript API - Real-time market data from TradingView WebSocket",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "API Support"
+		}
+	},
+	"paths": {
+		"/api/stream/bars": {
+			"get": {
+				"operationId": "StreamBars",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "Invalid request parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Stream real-time bars via Server-Sent Events",
+				"summary": "Subscribe to real-time bar updates",
+				"tags": [
+					"Streaming Data"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Trading symbol",
+						"in": "query",
+						"name": "symbol",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Timeframe interval",
+						"in": "query",
+						"name": "interval",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/Interval"
+						}
+					}
+				]
+			}
+		},
+		"/api/stream/quote": {
+			"get": {
+				"operationId": "StreamQuote",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "Invalid request parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Stream real-time quotes via Server-Sent Events",
+				"summary": "Subscribe to real-time quote updates",
+				"tags": [
+					"Streaming Data"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Trading symbol",
+						"in": "query",
+						"name": "symbol",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/download": {
+			"get": {
+				"operationId": "Download",
+				"responses": {
+					"200": {
+						"description": "Successfully retrieved historical data",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/OHLCV"
+									},
+									"type": "array"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized - Invalid API key",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Download historical OHLCV data",
+				"summary": "Get historical bars for a symbol",
+				"tags": [
+					"Historical Data"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Trading symbol (e.g., \"IDX:BBCA\", \"COINBASE:BTCUSD\")",
+						"in": "query",
+						"name": "symbol",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Timeframe interval",
+						"in": "query",
+						"name": "interval",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/Interval"
+						}
+					},
+					{
+						"description": "Number of bars to fetch",
+						"in": "query",
+						"name": "bars",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "Request timeout in milliseconds (optional)",
+						"in": "query",
+						"name": "timeout",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/price": {
+			"get": {
+				"operationId": "GetPrice",
+				"responses": {
+					"200": {
+						"description": "Successfully retrieved price",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"timestamp": {
+											"type": "string"
+										},
+										"price": {
+											"type": "number",
+											"format": "double"
+										},
+										"symbol": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"timestamp",
+										"price",
+										"symbol"
+									],
+									"type": "object"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get current price for a symbol",
+				"summary": "Get real-time price",
+				"tags": [
+					"Historical Data"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Trading symbol",
+						"in": "query",
+						"name": "symbol",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Request timeout (optional)",
+						"in": "query",
+						"name": "timeout",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/quote": {
+			"get": {
+				"operationId": "GetQuote",
+				"responses": {
+					"200": {
+						"description": "Successfully retrieved quote",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Quote"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request parameters",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Get current quote for a symbol",
+				"summary": "Get full quote with bid/ask/volume",
+				"tags": [
+					"Historical Data"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "Trading symbol",
+						"in": "query",
+						"name": "symbol",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Request timeout (optional)",
+						"in": "query",
+						"name": "timeout",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/health": {
+			"get": {
+				"operationId": "GetHealth",
+				"responses": {
+					"200": {
+						"description": "API is healthy",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HealthResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Health check endpoint",
+				"summary": "Check API health status",
+				"tags": [
+					"Health"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/debug": {
+			"get": {
+				"operationId": "GetDebug",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/DebugInfo"
+								}
+							}
+						}
+					}
+				},
+				"description": "Debug endpoint to check environment variables",
+				"summary": "Get environment debug information",
+				"tags": [
+					"Debug"
+				],
+				"security": [],
+				"parameters": []
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "/api"
+		}
+	]
+}

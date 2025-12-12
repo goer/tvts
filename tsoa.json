@@ -1,0 +1,33 @@
+{
+  "entryFile": "api/app.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["api/controllers/**/*Controller.ts"],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3,
+    "name": "TVTS API",
+    "version": "1.0.0",
+    "description": "TradingView TypeScript API - Real-time market data from TradingView WebSocket",
+    "contact": {
+      "name": "API Support"
+    },
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "X-API-Key",
+        "in": "header"
+      }
+    },
+    "basePath": "/api",
+    "schemes": ["https", "http"]
+  },
+  "routes": {
+    "routesDir": "build",
+    "middleware": "express",
+    "authenticationModule": "api/middleware/authMiddleware.ts",
+    "esm": true
+  },
+  "compilerOptions": {
+    "esModuleInterop": true
+  }
+}
