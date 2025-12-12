@@ -1,0 +1,78 @@
+========================================
+TVTS API - Render Deployment Info
+========================================
+
+I've opened the Render Dashboard for you: https://dashboard.render.com/select-repo?type=blueprint
+
+Follow these steps:
+
+========================================
+STEP 1: Select Repository
+========================================
+Repository: goer/tvts
+Branch: render-deployment
+
+Render will auto-detect the render.yaml file and configure everything.
+
+========================================
+STEP 2: Set Environment Variables
+========================================
+
+You MUST add these two environment variables:
+
+1. API_KEY
+   Value: prod_tvts_api_key_12345_secure
+
+2. TVWS_AUTH_TOKEN
+   Value: eyJhbGciOiJSUzUxMiIsImtpZCI6IkdaeFUiLCJ0eXAiOiJKV1QifQ.eyJ1c2VyX2lkIjozMzkyMzUyMywiZXhwIjoxNjc4OTcwMzczLCJpYXQiOjE2Nzg5NTU5NzMsInBsYW4iOiJwcm9fcmVhbHRpbWUiLCJleHRfaG91cnMiOjEsInBlcm0iOiJpZHgiLCJzdHVkeV9wZXJtIjoidHYtcHJvc3R1ZGllcyx0di1jaGFydHBhdHRlcm5zLHR2LXZvbHVtZWJ5cHJpY2UiLCJtYXhfc3R1ZGllcyI6MTAsIm1heF9mdW5kYW1lbnRhbHMiOjAsIm1heF9jaGFydHMiOjQsIm1heF9hY3RpdmVfYWxlcnRzIjoxMDAsIm1heF9hY3RpdmVfcHJpbWl0aXZlX2FsZXJ0cyI6MTAwLCJtYXhfYWN0aXZlX2NvbXBsZXhfYWxlcnRzIjoxMDAsIm1heF9zdHVkeV9vbl9zdHVkeSI6OX0.q7UtbylM9XqffFpxhDuJbT1qUiznRL9bZv00O-gVlMzFhaqq6vb5HUoaCGME_2ps3JTz0zaSeSQRCa-M_PIdkzo0DUOvGJyz137F9Hxzy41pUF8UQ-hEaTboLCZL1-KfIRWcoR-l_a70EK9M6i0opx2J9vtZ2WhpoWgx9MEbVu0
+
+========================================
+STEP 3: Review Configuration
+========================================
+
+The render.yaml will automatically configure:
+- Service Name: tvts-api
+- Runtime: Node.js
+- Build Command: npm install && npm run build:api
+- Start Command: npm run start:api
+- Health Check: /api/health
+- Plan: Free
+
+========================================
+STEP 4: Deploy
+========================================
+
+Click "Apply" or "Create Web Service"
+
+Deployment will take 3-5 minutes.
+
+========================================
+After Deployment
+========================================
+
+Your API will be live at:
+https://tvts-api.onrender.com
+
+Test endpoints:
+1. Health check:
+   curl https://tvts-api.onrender.com/api/health
+
+2. Swagger UI (open in browser):
+   https://tvts-api.onrender.com/api-docs
+
+3. Get price (with API key):
+   curl -H "X-API-Key: prod_tvts_api_key_12345_secure" "https://tvts-api.onrender.com/api/price?symbol=COINBASE:BTCUSD"
+
+========================================
+Monitoring with Render CLI
+========================================
+
+After service is created, get the service ID:
+  render services --output json
+
+Then you can:
+  render logs srv-xxxxxxxx              # View logs
+  render deploys create srv-xxxxxxxx    # Manual deploy
+  render services                       # Interactive mode
+
+========================================
