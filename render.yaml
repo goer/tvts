@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: tvts-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build:api
+    startCommand: npm run start:api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_KEY
+        sync: false
+      - key: TVWS_AUTH_TOKEN
+        sync: false
+    healthCheckPath: /api/health
