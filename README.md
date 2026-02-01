@@ -384,6 +384,34 @@ const ethHandle = client.streamBars('COINBASE:ETHUSD', '1', (bar) => {
 client.disconnect();
 ```
 
+## Integration with Python (Pandas)
+
+You can easily use the CLI to fetch data for analysis in Python with `pandas`:
+
+```python
+import subprocess
+import pandas as pd
+import json
+
+# 1. Fetch data using CLI
+result = subprocess.run(
+    ["tvts", "history", "IDX:BBCA", "-i", "1D", "-b", "100"],
+    capture_output=True,
+    text=True
+)
+
+# 2. Parse JSON
+data = json.loads(result.stdout)
+
+# 3. Create DataFrame
+df = pd.DataFrame(data)
+df['timestamp'] = pd.to_datetime(df['timestamp'])
+df.set_index('timestamp', inplace=True)
+
+# 4. Analyze
+print(df.tail())
+```
+
 ## Building
 
 ```bash
