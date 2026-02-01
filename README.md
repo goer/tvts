@@ -20,6 +20,30 @@ npm install tvts
 yarn add tvts
 ```
 
+## CLI Usage
+
+The package includes a CLI tool for fetching TradingView data directly from your terminal.
+
+```bash
+# Get a quote
+tvts quote IDX:BBCA
+
+# Get current price
+tvts price COINBASE:BTCUSD
+
+# Get historical data
+tvts history IDX:BBCA -i 1D -b 5
+
+# Stream real-time bars
+tvts stream bars COINBASE:BTCUSD
+```
+
+Options:
+- `-t, --token <token>`: TradingView Auth Token
+- `-i, --interval <interval>`: Timeframe (for history/stream)
+- `-b, --bars <number>`: Number of bars (for history)
+
+
 ## Quick Start
 
 ### Asynchronous Usage (Promises)

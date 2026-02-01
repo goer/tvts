@@ -11,6 +11,9 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "bin": {
+    "tvts": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -27,9 +30,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "commander": "^14.0.3",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.5",
     "@types/node": "^20.0.0",
     "@types/ws": "^8.5.10",
     "typescript": "^5.3.0"
