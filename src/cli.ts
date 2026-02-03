@@ -32,6 +32,7 @@ program
             process.exit(1);
         }
         client.disconnect();
+        process.exit(0);
     });
 
 // Price Command
@@ -49,6 +50,7 @@ program
             process.exit(1);
         }
         client.disconnect();
+        process.exit(0);
     });
 
 // History Command
@@ -70,6 +72,7 @@ program
             process.exit(1);
         }
         client.disconnect();
+        process.exit(0);
     });
 
 // Stream Command
