@@ -43,6 +43,39 @@ Options:
 - `-i, --interval <interval>`: Timeframe (for history/stream)
 - `-b, --bars <number>`: Number of bars (for history)
 
+- `-b, --bars <number>`: Number of bars (for history)
+
+
+## Server API
+
+TVTS includes a standalone REST and WebSocket API server.
+
+### Starting the Server
+
+```bash
+npm run start:server
+# Server runs on port 7070
+```
+
+### REST Endpoints
+
+- **Get Price**: `GET /api/price/:symbol`
+- **Get Quote**: `GET /api/quote/:symbol`
+- **Get History**: `GET /api/history/:symbol?interval=15&bars=100`
+
+### WebSocket API
+
+Connect to `ws://localhost:7070`.
+
+**Subscribe to Quote:**
+```json
+{ "type": "subscribe", "channel": "quote", "symbol": "IDX:BBCA" }
+```
+
+**Subscribe to Bars:**
+```json
+{ "type": "subscribe", "channel": "bars", "symbol": "COINBASE:BTCUSD", "interval": "1" }
+```
 
 ## Quick Start
 

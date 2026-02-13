@@ -15,9 +15,10 @@
     "tvts": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build:local": "tsc",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "start:server": "npm run build:local && node dist/server.js"
   },
   "keywords": [
     "tradingview",
@@ -31,10 +32,14 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^14.0.3",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/commander": "^2.12.5",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^20.0.0",
     "@types/ws": "^8.5.10",
     "typescript": "^5.3.0"
