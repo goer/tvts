@@ -36,3 +36,33 @@ coverage/
 *.tmp
 *.temp
 .vercel
+Processing project: pm
+----------------------------------------------------
+Processing project: postgres-compose
+----------------------------------------------------
+Processing project: research
+----------------------------------------------------
+Processing project: saham
+----------------------------------------------------
+Processing project: scripts
+----------------------------------------------------
+Processing project: space-agent
+----------------------------------------------------
+Processing project: stock-predictability
+----------------------------------------------------
+Processing project: telegram_py_cli
+----------------------------------------------------
+Processing project: test
+----------------------------------------------------
+Processing project: test1
+----------------------------------------------------
+Processing project: test2
+----------------------------------------------------
+Processing project: test3
+----------------------------------------------------
+Processing project: test4
+-------venv/
+.venv/
+__pycache__/
+*.pyc
+venv/
