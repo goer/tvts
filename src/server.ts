@@ -127,16 +127,65 @@ app.get('/api/price/:symbol', async (req, res) => {
 /**
  * GET /api/history/:symbol
  */
+// TradingView limits connections per IP (HTTP 429), and each download opens one.
+// So: cache recent answers, share identical in-flight requests, cap concurrency,
+// and pause after a 429 (serving the last good answer meanwhile).
+const MAX_CONCURRENT = 3;
+const COOLDOWN_MS = 90_000;
+const cache = new Map<string, { at: number; data: unknown }>();
+const inflight = new Map<string, Promise<unknown>>();
+const waiting: Array<() => void> = [];
+let active = 0;
+let coolUntil = 0;
+
+const ttlFor = (interval: string) => (/^(D|1D|W|1W|M|1M)$/i.test(interval) ? 10 * 60_000 : 60_000);
+
+async function limited<T>(task: () => Promise<T>): Promise<T> {
+    if (active >= MAX_CONCURRENT) await new Promise<void>((resume) => waiting.push(resume));
+    active++;
+    try {
+        return await task();
+    } finally {
+        active--;
+        waiting.shift()?.();
+    }
+}
+
+async function history(symbol: string, interval: Interval, bars: number) {
+    const key = `${symbol}|${interval}|${bars}`;
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < ttlFor(interval)) return hit.data;
+    if (Date.now() < coolUntil) {
+        if (hit) return hit.data;
+        throw new Error('TradingView rate limit (429); cooling down');
+    }
+    const pending = inflight.get(key);
+    if (pending) return pending;
+    const job = limited(() => client.download(symbol, interval, bars))
+        .then((data) => {
+            cache.set(key, { at: Date.now(), data });
+            if (cache.size > 2000) cache.delete(cache.keys().next().value!);
+            return data;
+        })
+        .catch((error: any) => {
+            if (/429/.test(String(error?.message))) coolUntil = Date.now() + COOLDOWN_MS;
+            if (hit) return hit.data;
+            throw error;
+        })
+        .finally(() => inflight.delete(key));
+    inflight.set(key, job);
+    return job;
+}
+
 app.get('/api/history/:symbol', async (req, res) => {
     try {
         const { symbol } = req.params;
         const interval = (req.query.interval as Interval) || '15';
         const bars = parseInt(req.query.bars as string) || 100;
-
-        const data = await client.download(symbol, interval, bars);
-        res.json(data);
+        res.json(await history(symbol, interval, bars));
     } catch (error: any) {
-        res.status(500).json({ error: error.message || 'Failed to fetch history' });
+        const message = error.message || 'Failed to fetch history';
+        res.status(/429/.test(message) ? 503 : 500).json({ error: message });
     }
 });
 
